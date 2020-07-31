@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 /* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -31,50 +32,40 @@ function CadastroCategoria() {
   }
 
   useEffect(() => {
-    const URL_TOP = 'https://erisenflix.herokuapp.com/';
-    fetch(URL_TOP)
-      .then(async (respostaDoServidor) => {
-        const resposta = await respostaDoServidor.json();
-        setCategorias([
-          ...resposta,
-        ]);
-      });
-    // setTimeout(() => {
-    //   setCategorias([
-    //     ...categorias,
-    //     {
-    //       id: 1,
-    //       nome: 'Front-End',
-    //       descricao: 'Uma Categoria Show',
-    //       cor: '#6bd1ff',
-    //     },
-    //     {
-    //       id: 2,
-    //       nome: 'Back-End',
-    //       descricao: 'Outra Categoria Show',
-    //       cor: '#6bd1ff',
-    //     },
-    //   ]);
-    // }, 4 * 1000);
+    if (window.location.href.includes('localhost')) {
+      const URL = 'http://localhost:8080/categorias';
+      fetch(URL)
+        .then(async (respostaDoServer) => {
+          if (respostaDoServer.ok) {
+            const resposta = await respostaDoServer.json();
+            setCategorias(resposta);
+            return;
+          }
+          throw new Error('Não foi possível pegar os dados');
+        });
+    }
   }, []);
 
   return (
-    // eslint-disable-next-line react/jsx-filename-extension
     <PageDefault>
       <h1>
         Cadastro de Categoria:
         {' '}
-        { values.nome }
+        {values.nome}
       </h1>
+
       <form onSubmit={function handleSubmit(infosDoEvento) {
         infosDoEvento.preventDefault();
+
         setCategorias([
           ...categorias,
           values,
         ]);
+
         setValues(valoresIniciais);
       }}
       >
+
         <FormField
           label="Nome da Categoria"
           type="text"
@@ -84,8 +75,8 @@ function CadastroCategoria() {
         />
 
         <FormField
-          label="Descrição"
-          type="textarea"
+          label="Descrição:"
+          type="????"
           name="descricao"
           value={values.descricao}
           onChange={handleChange}
@@ -98,21 +89,27 @@ function CadastroCategoria() {
           value={values.cor}
           onChange={handleChange}
         />
+        {/* <div>
+          <label>
+            Cor:
+            <input
+              type="color"
+              value={values.cor}
+              name="cor"
+              onChange={handleChange}
+            />
+          </label>
+        </div> */}
 
         <Button>
           Cadastrar
         </Button>
       </form>
 
-      {categorias.length === 0 && (
-        <div>
-          Loading...
-        </div>
-      )}
       <ul>
-        {categorias.map((categoria) => (
-          <li key={`${categoria.nome}`}>
-            {categoria.nome}
+        {categorias.map((categoria, indice) => (
+          <li key={`${categoria}${indice}`}>
+            {categoria.titulo}
           </li>
         ))}
       </ul>
